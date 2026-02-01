@@ -12,8 +12,8 @@ import math
 import os
 import lxml.etree as ET
 from shapely.geometry import Point, Polygon, LineString, MultiLineString, MultiPoint
-from shapely.ops import unary_union
 
+# https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
 def deg2num(lat_deg, lon_deg, zoom):
   lat_rad = math.radians(lat_deg)
   n = 2.0 ** zoom
@@ -21,27 +21,14 @@ def deg2num(lat_deg, lon_deg, zoom):
   ytile = int((1.0 - math.asinh(math.tan(lat_rad)) / math.pi) / 2.0 * n)
   return (xtile, ytile)
 
+# https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
 # This returns the NW-corner of the square. Use the function with xtile+1 and/or ytile+1 to get the other corners. With xtile+0.5 & ytile+0.5 it will return the center of the tile.   
-
 def num2deg(xtile, ytile, zoom):
   n = 2.0 ** zoom
   lon_deg = xtile / n * 360.0 - 180.0
   lat_rad = math.atan(math.sinh(math.pi * (1 - 2 * ytile / n)))
   lat_deg = math.degrees(lat_rad)
   return (lat_deg, lon_deg)
-
-# https://stackoverflow.com/questions/33001420/find-destination-coordinates-given-starting-coordinates-bearing-and-distance/33002517#33002517
-def getEndpoint(lat1,lon1,bearing,d):
-  R = 6371                     #Radius of the Earth
-  brng = math.radians(bearing) #convert degrees to radians
-  # d = d*1.852                  #convert nautical miles to km
-  lat1 = math.radians(lat1)    #Current lat point converted to radians
-  lon1 = math.radians(lon1)    #Current long point converted to radians
-  lat2 = math.asin( math.sin(lat1)*math.cos(d/R) + math.cos(lat1)*math.sin(d/R)*math.cos(brng))
-  lon2 = lon1 + math.atan2(math.sin(brng)*math.sin(d/R)*math.cos(lat1),math.cos(d/R)-math.sin(lat1)*math.sin(lat2))
-  lat2 = math.degrees(lat2)
-  lon2 = math.degrees(lon2)
-  return lat2,lon2
 
 def createGridLines(gridNW, gridSE, zoom):
   gridLines = []
@@ -275,5 +262,6 @@ shapely2osm(tilePoints, nodeID, wayID)
 print('Time after osm write: ', time.perf_counter() - tic, ' seconds<BR>\r\n')
 print('Number of tiles: ', (gridSE[1] - gridNW[1]) *  (gridSE[0] - gridNW[0]))
 #print('Time before osm write: ', time.perf_counter() - tic, ' seconds<BR>\r\n')
+
 
 
