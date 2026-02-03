@@ -1,9 +1,9 @@
-# 0,5k 1.4s python3 missing_squadrats.py squadrats-2026-01-01.kml Olli 24.859027260564833 60.220602974148186 24.947346246430854 60.197660629350736
-# 5k 1.3s python3 missing_squadrats.py squadrats-2026-01-01.kml Olli 24.770523773101576 60.24742687505427 25.038256873130614 60.17788619144401
-# 50k 2.5s python3 missing_squadrats.py squadrats-2026-01-01.kml Olli 24.52973612516265 60.310623797012106 25.341351115397025 60.099768666739884
-# 350k 14s python3 missing_squadrats.py squadrats-2026-01-01.kml Olli 23.915899293552584 60.620612278297 26.103576753669447 60.02911120290123
-# 1050k 14s python3 missing_squadrats.py squadrats-2026-01-01.kml Olli 23.18334864383624 60.89758612807452 26.992316334266196 59.869643254202145
-# 2101k 14s python3 missing_squadrats.py squadrats-2026-01-01.kml Olli 22.392745132218305 61.10414236956497 27.779438898665266 59.6502656664513
+# 0,5k 1.4s python3 missing_squadrats.py squadrats-2026-02-01.kml Olli 24.859027260564833 60.220602974148186 24.947346246430854 60.197660629350736
+# 5k 1.3s python3 missing_squadrats.py squadrats-2026-02-01.kml Olli 24.770523773101576 60.24742687505427 25.038256873130614 60.17788619144401
+# 50k 2.5s python3 missing_squadrats.py squadrats-2026-02-01.kml Olli 24.52973612516265 60.310623797012106 25.341351115397025 60.099768666739884
+# 350k 14s python3 missing_squadrats.py squadrats-2026-02-01.kml Olli 23.915899293552584 60.620612278297 26.103576753669447 60.02911120290123
+# 1050k 14s python3 missing_squadrats.py squadrats-2026-02-01.kml Olli 23.18334864383624 60.89758612807452 26.992316334266196 59.869643254202145
+# 2101k 14s python3 missing_squadrats.py squadrats-2026-02-01.kml Olli 22.392745132218305 61.10414236956497 27.779438898665266 59.6502656664513
 
 import numpy as np
 import time
@@ -29,6 +29,19 @@ def num2deg(xtile, ytile, zoom):
   lat_rad = math.atan(math.sinh(math.pi * (1 - 2 * ytile / n)))
   lat_deg = math.degrees(lat_rad)
   return (lat_deg, lon_deg)
+
+def readKmlFileTree(kmlFilePath):
+  tree = ET.parse(kmlFilePath)
+  data = ET.tostring(tree, encoding="unicode", pretty_print=True)
+  # print ('Data: \r\n', data, '<BR>\r\n')
+  data = data.split("<name>squadratinhos</name>")[1].split("<name>ubersquadrat</name>")[0].splitlines()
+  return data
+
+def readKmlFile(kmlFilePath):
+  with open(kmlFilePath) as f:
+    data = f.read()
+    data = data.split("<name>squadratinhos</name>")[1].split("<name>ubersquadrat</name>")[0].splitlines()
+  return data
 
 def createGridLines(gridNW, gridSE, zoom):
   gridLines = []
@@ -164,11 +177,60 @@ def shapely2osm(shapelyData, nodeID, wayID):
   return
 
 def processGrid(data, gridPoints):
+  crossing = 0
+  data = data[0].split("<MultiGeometry>")[1].split("</MultiGeometry>")[0] # Crop the data
+  polygonList = data.split("</Polygon><Polygon>") # Split data into polygons
+  for x in polygonList:
+    boundaryCoords = []
+    interior = []
+    exterior = []
+    outerBoundaryIsList = x.split("<outerBoundaryIs>") # Split polygon into outer boundaries (exteriors)
+    for y in outerBoundaryIsList[1:]:
+      y = y.split("<coordinates>")[1].split("</coordinates>")[0] # Crop the outer boundary 
+      wayLength = y.count(" ") + 1
+      y = y.replace(" ",",").split(",")
+# https://www.kubeblogs.com/how-to-process-kml-files-with-pythons-shapely-library-for-detecting-geo-boundaries/
+      for z in range(wayLength): # Iterate the coordinates
+        lat_deg = float(y[z*2+1])
+        lon_deg = float(y[z*2])
+        boundaryCoords.append((lat_deg, lon_deg))
+        if SElat < lat_deg:
+          if NWlat > lat_deg:
+            if NWlon < lon_deg:
+              if SElon > lon_deg:
+                crossing = 1
+    exterior = boundaryCoords
+    innerBoundaryIsList = x.split("<innerBoundaryIs>")
+    for y in innerBoundaryIsList[1:]:
+      boundaryCoords = []
+      y = y.split("<coordinates>")[1].split("</coordinates>")[0]
+      wayLength = y.count(" ") + 1
+      y = y.replace(" ",",").split(",")
+      for z in range(wayLength):
+        lat_deg = float(y[z*2+1])
+        lon_deg = float(y[z*2])
+        boundaryCoords.append((lat_deg, lon_deg))
+        if SElat < lat_deg:
+          if NWlat > lat_deg:
+            if NWlon < lon_deg:
+              if SElon > lon_deg:
+                crossing = 1
+      interior.append(boundaryCoords)
+    if crossing == 1:
+#      print(i, ' Time in the end of a polygon: ', time.perf_counter() - tic, ' seconds<BR>\r\n')
+#      boundingBoxPolygon = boundingBoxPolygon - Polygon(exterior, holes = interior)
+      gridPoints = gridPoints - Polygon(exterior, holes = interior)
+      crossing = 0
+  crossing = 0
+  return gridPoints
+  
+def processGridTree(data, gridPoints):
   i = 0
   crossing = 0
   boundaryCoords = []
   for x in data:
     if "<LinearRing>" in x:
+      print(data)
       x = data[i + 1]
       x = data[i + 1].split("<coordinates>")[1].split("</coordinates>")[0]
       wayLength = x.count(" ") + 1
@@ -232,11 +294,9 @@ missing_squadrats_dir = script_dir
 kmlFilePath = missing_squadrats_dir + '/' + kmlFile
 #kmlFilePath = kmlFile
 print ('KML file: ', kmlFile, '<BR>\r\n')
-tree = ET.parse(kmlFilePath)
-data = ET.tostring(tree, encoding="unicode", pretty_print=True)
-# print ('Data: \r\n', data, '<BR>\r\n')
 
-data = data.split("<name>squadratinhos</name>")[1].split("<name>ubersquadrat</name>")[0].splitlines()
+# data = readKmlFileTree(kmlFilePath)
+data = readKmlFile(kmlFilePath)
 
 nodes = []
 ways = []
@@ -251,7 +311,9 @@ gridPoints = MultiPoint(createGridPoints(gridNW, gridSE, zoom))
 
 print('Time after grid creation: ', time.perf_counter() - tic, ' seconds<BR>\r\n')
 
+#tilePoints = processGridTree(data, gridPoints)
 tilePoints = processGrid(data, gridPoints)
+# print(tilePoints)
 
 points2lines(tilePoints, nodeID, wayID)
 
@@ -262,6 +324,5 @@ shapely2osm(tilePoints, nodeID, wayID)
 print('Time after osm write: ', time.perf_counter() - tic, ' seconds<BR>\r\n')
 print('Number of tiles: ', (gridSE[1] - gridNW[1]) *  (gridSE[0] - gridNW[0]))
 #print('Time before osm write: ', time.perf_counter() - tic, ' seconds<BR>\r\n')
-
 
 
