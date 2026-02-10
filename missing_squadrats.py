@@ -12,6 +12,10 @@ import math
 import os
 import lxml.etree as ET
 from shapely.geometry import Point, Polygon, LineString, MultiLineString, MultiPoint
+import shutil
+import datetime
+from pathlib import Path
+import subprocess
 
 # https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
 def deg2num(lat_deg, lon_deg, zoom):
@@ -120,6 +124,7 @@ def points2lines(tilePoints, nodeID, wayID):
     nodeID -= 1
     ways.append((wayID, nodeID + 4, nodeID + 3, nodeID + 2, nodeID + 1, nodeID + 4))
     wayID -= 1
+  nodes.sort(reverse=False)
   return nodes, ways, nodeID, wayID
 
 def points2linesNoDuplicateNodes(tilePoints, nodeID, wayID):
@@ -159,7 +164,7 @@ def points2linesNoDuplicateNodes(tilePoints, nodeID, wayID):
   return nodes, ways, nodeID, wayID
 
 def shapely2osm(shapelyData, nodeID, wayID):
-  with open("demofile.osm", "w") as f:
+  with open("newsquadrats.osm", "w") as f:
     f.write("<?xml version='1.0' encoding='UTF-8'?>\n")
     f.write("<osm version='0.6' upload='false' generator='JOSM'>\n")
     nodeIDCurr = nodeID
@@ -217,7 +222,6 @@ def processGrid(data, gridPoints):
                 crossing = 1
       interior.append(boundaryCoords)
     if crossing == 1:
-#      print(i, ' Time in the end of a polygon: ', time.perf_counter() - tic, ' seconds<BR>\r\n')
 #      boundingBoxPolygon = boundingBoxPolygon - Polygon(exterior, holes = interior)
       gridPoints = gridPoints - Polygon(exterior, holes = interior)
       crossing = 0
@@ -250,7 +254,6 @@ def processGridTree(data, gridPoints):
         interior = []
       else:
         interior.append(boundaryCoords)
-#    print(i, crossing, data[i + 4])
       if crossing == 1 and "</Polygon>" in data[i + 4]:
 #      print(i, ' Time in the end of a polygon: ', time.perf_counter() - tic, ' seconds<BR>\r\n')
 #      boundingBoxPolygon = boundingBoxPolygon - Polygon(exterior, holes = interior)
@@ -261,7 +264,84 @@ def processGridTree(data, gridPoints):
     i += 1
   return gridPoints
 
+def osm2img():
+  # Create output dir
+  dateNow = datetime.datetime.now()
+  dir = dateNow.strftime("%Y%m%d")
+  abs_dir_path = Path(__file__).parent.parent.parent / dir
+  try: 
+    os.mkdir(abs_dir_path) 
+  except OSError as error: 
+    print(error) 
+  abs_osmfile_path = abs_dir_path / "newsquadrats.osm"
+  # abs_osmgridfile_path = abs_dir_path / "newsquadratsgrid.osm"
+
+  shutil.move("newsquadrats.osm", abs_osmfile_path)
+  # shutil.move("newsquadratsgrid.osm", abs_osmgridfile_path)
+
+# Create Garmin map
+# https://peatfaerie.medium.com/how-to-create-a-tile-grid-overlay-for-the-garmin-edge-based-on-veloviewer-unexplored-tiles-5b36e7c401bd
+  abs_mkgmapfile_path = Path(abs_dir_path).parent / "src" / "ext" / "mkgmap-r4916" / "mkgmap.jar"
+# print(abs_mkgmapfile_path)
+  mkgmap_output_path = "--output-dir=" + str(abs_dir_path)
+  mkgmap_family_id = "--family-id=" + str(int(dir) - 20200000)
+  mkgmap_description = "--description=" + "squadrats-" + str(int(dir))
+  mkgmap_mapname = "--mapname=" + str(int(dir) + 43040000)
+  mkgmap_overview_mapnumber = "--overview-mapnumber=" + str(int(dir) + 43040000 - 1)
+  mkgmap_config_path = "--read-config=" + str(missing_squadrats_dir) + "config.txt"
+  mkgmap_typ_path = str(missing_squadrats_dir) + "typ.txt"
+  mkgmap_style_path = "--style-file=" + str(missing_squadrats_dir) + "mkgmap.style"
+  mkgmap_input = "--input-file=" + str(abs_osmfile_path)
+  # mkgmap_inputgrid = "--input-file=" + str(abs_osmgridfile_path)
+
+# print(["java", "-ea", "-jar", abs_mkgmapfile_path, mkgmap_config_path, mkgmap_family_id, mkgmap_mapname, mkgmap_overview_mapnumber, mkgmap_style_path, mkgmap_typ_path, mkgmap_description, mkgmap_input, mkgmap_inputgrid, mkgmap_output_path])
+# subprocess.run(["java", "-ea", "-jar", abs_mkgmapfile_path, mkgmap_config_path, mkgmap_family_id, mkgmap_mapname, mkgmap_overview_mapnumber, mkgmap_style_path, mkgmap_typ_path, mkgmap_description, mkgmap_input, mkgmap_inputgrid, mkgmap_output_path])
+  subprocess.run(["java", "-ea", "-jar", abs_mkgmapfile_path, mkgmap_config_path, mkgmap_family_id, mkgmap_mapname, mkgmap_overview_mapnumber, mkgmap_style_path, mkgmap_typ_path, mkgmap_description, mkgmap_input, mkgmap_output_path])
+
+# Rename map file
+  old_name = abs_dir_path / "gmapsupp.img"
+  new_name_file = "squadrats-" + str(int(dir)) + "-" + userName + ".img"
+  new_name = abs_dir_path / new_name_file
+  os.rename(old_name, new_name)
+# print(new_name)
+  new_img_dir = missing_squadrats_dir + "../../www/missing_squadrats/img/"
+  shutil.copy(new_name, new_img_dir)
+  return
+
+def cleaning():
+  baseDir = Path(__file__).parent.parent.parent
+  dateNow = datetime.datetime.now()
+  dateDir = dateNow.strftime("%Y%m%d")
+  dateDirPath = os.path.join(baseDir, dateDir)
+  if os.path.exists(dateDirPath):
+    files = os.listdir(dateDirPath)
+    print("\n".join(files))
+    for fileName in files:
+      filePath = os.path.join(dateDirPath, fileName)
+      if os.path.isfile(filePath):
+        os.remove(filePath)
+    os.rmdir(dateDirPath)
+  fileToRemove = os.path.join(baseDir, "jobs", "missing_squadrats", "inProcess")
+  print("File to removed: " + fileToRemove)
+  if os.path.exists(fileToRemove):
+    os.remove(fileToRemove)
+    print("inProcess removed")
+  fileToRemove = os.path.join(baseDir, "jobs", "missing_squadrats", kmlFile)
+  print("File to removed: " + fileToRemove)
+  if os.path.exists(fileToRemove):
+    os.remove(fileToRemove)
+    print("kmlFile removed")
+  fileToRemove = os.path.join(baseDir, "jobs", "missing_squadrats", kmlFile.replace(".kml", ".sh"))
+  print("File to removed: " + fileToRemove)
+  if os.path.exists(fileToRemove):
+    os.remove(fileToRemove)
+    print("shFile removed")
+  return
+
 # Main program
+
+logFilePath = "missingSquadrats.log"
+logFile = open(logFilePath, "a")  # append mode
 
 zoom = 17
 script_dir = os.path.dirname(__file__) + "/" #<-- absolute dir the script is in
@@ -284,18 +364,11 @@ print('Grid corners: ', gridNW, ' and ', gridSE, ', dimensions: ', gridSE[1] - g
 # https://www.programiz.com/python-programming/matrix np.zeros( (rows, cols) )
 boundingBox = np.zeros( (gridSE[1] - gridNW[1], gridSE[0] - gridNW[0]) )
 boundingBoxPolygon = Polygon([[NWlat,NWlon], [NWlat,SElon], [SElat,SElon], [SElat,NWlon], [NWlat,NWlon]])
-# print(boundingBox)
-
-# Find the inner polygons that cross the bounding box
-#	If none found, just make a grid for the whole bounding box
-# Iterate all the points of the grid and check if they are inside of any of the selected inner polygons
 
 missing_squadrats_dir = script_dir
-kmlFilePath = missing_squadrats_dir + '/' + kmlFile
-#kmlFilePath = kmlFile
+kmlFilePath = missing_squadrats_dir + '../../jobs/missing_squadrats/' + kmlFile
 print ('KML file: ', kmlFile, '<BR>\r\n')
 
-# data = readKmlFileTree(kmlFilePath)
 data = readKmlFile(kmlFilePath)
 
 nodes = []
@@ -313,9 +386,8 @@ print('Time after grid creation: ', time.perf_counter() - tic, ' seconds<BR>\r\n
 
 #tilePoints = processGridTree(data, gridPoints)
 tilePoints = processGrid(data, gridPoints)
-# print(tilePoints)
 
-points2lines(tilePoints, nodeID, wayID)
+nodes, ways, nodeID, wayID = points2lines(tilePoints, nodeID, wayID)
 
 print('Time before osm write: ', time.perf_counter() - tic, ' seconds<BR>\r\n')
 
@@ -323,6 +395,32 @@ shapely2osm(tilePoints, nodeID, wayID)
 
 print('Time after osm write: ', time.perf_counter() - tic, ' seconds<BR>\r\n')
 print('Number of tiles: ', (gridSE[1] - gridNW[1]) *  (gridSE[0] - gridNW[0]))
-#print('Time before osm write: ', time.perf_counter() - tic, ' seconds<BR>\r\n')
 
+# osm2img()
+
+# Cleaning
+# https://www.geeksforgeeks.org/delete-a-directory-or-file-using-python/
+
+# cleaning()
+
+print('Total time: ', time.perf_counter() - tic, ' seconds<BR>\r\n')
+
+timeNow = datetime.datetime.now()
+timeStamp = timeNow.strftime("%d.%m.%Y %H:%M:%S")
+timeTotal = time.perf_counter() - tic
+
+#logFile.write(timeStamp + ";" + userName + ";" + str(timeTotal) + ";" + str(numberOfWays) + "\n")
+logFile.write(timeStamp + ";" + userName + ";" + str(timeTotal) + "\n")
+
+logFile.close()
+
+'''
+toLog = 'Kml file: ' + kmlFile
+logFile.write(toLog + "\n")
+
+toLog = 'Total time: ' + str(time.perf_counter() - tic) + ' seconds'
+logFile.write(toLog + "\n---\n")
+
+logFile.close()
+'''
 
