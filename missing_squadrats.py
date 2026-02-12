@@ -338,17 +338,8 @@ def cleaning():
     print("shFile removed")
   return
 
-# Main program
+# Arguments
 
-logFilePath = "missingSquadrats.log"
-logFile = open(logFilePath, "a")  # append mode
-
-zoom = 17
-script_dir = os.path.dirname(__file__) + "/" #<-- absolute dir the script is in
-
-tic = time.perf_counter()
-
-# Sorting arguments
 arguments = sys.argv
 kmlFile = arguments[1]
 userName = arguments[2]
@@ -356,6 +347,28 @@ NWlon = float(arguments[3]) # lon, ytile, col, index 1, ~25
 NWlat = float(arguments[4]) # lat, xtile, row, index 0, ~60
 SElon = float(arguments[5]) # lon, ytile, col, index 1, ~25
 SElat = float(arguments[6]) # lat, xtile, row, index 0, ~60
+
+# Variables
+
+logFilePath = "missingSquadrats.log"
+logFile = open(logFilePath, "a")  # append mode
+zoom = 17
+script_dir = os.path.dirname(__file__) + "/" #<-- absolute dir the script is in
+missing_squadrats_dir = script_dir
+# kmlFilePath = missing_squadrats_dir + '../../jobs/missing_squadrats/' + kmlFile
+kmlFilePath = kmlFile
+print ('KML file: ', kmlFile, '<BR>\r\n')
+
+nodes = []
+ways = []
+boundaries = []
+interior = []
+nodeID = -4306537
+wayID = -807654
+
+tic = time.perf_counter()
+
+# Main program
 
 # Calculate squadrats grid corners
 gridNW = deg2num(NWlat, NWlon, zoom)
@@ -365,18 +378,7 @@ print('Grid corners: ', gridNW, ' and ', gridSE, ', dimensions: ', gridSE[1] - g
 boundingBox = np.zeros( (gridSE[1] - gridNW[1], gridSE[0] - gridNW[0]) )
 boundingBoxPolygon = Polygon([[NWlat,NWlon], [NWlat,SElon], [SElat,SElon], [SElat,NWlon], [NWlat,NWlon]])
 
-missing_squadrats_dir = script_dir
-kmlFilePath = missing_squadrats_dir + '../../jobs/missing_squadrats/' + kmlFile
-print ('KML file: ', kmlFile, '<BR>\r\n')
-
 data = readKmlFile(kmlFilePath)
-
-nodes = []
-ways = []
-boundaries = []
-interior = []
-nodeID = -4306537
-wayID = -807654
 
 print('Time after bounding box test: ', time.perf_counter() - tic, ' seconds<BR>\r\n')
 
