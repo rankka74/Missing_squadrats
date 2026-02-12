@@ -355,8 +355,8 @@ logFile = open(logFilePath, "a")  # append mode
 zoom = 17
 script_dir = os.path.dirname(__file__) + "/" #<-- absolute dir the script is in
 missing_squadrats_dir = script_dir
-# kmlFilePath = missing_squadrats_dir + '../../jobs/missing_squadrats/' + kmlFile
-kmlFilePath = kmlFile
+kmlFilePath = missing_squadrats_dir + '../../jobs/missing_squadrats/' + kmlFile
+# kmlFilePath = kmlFile
 print ('KML file: ', kmlFile, '<BR>\r\n')
 
 nodes = []
@@ -398,12 +398,12 @@ shapely2osm(tilePoints, nodeID, wayID)
 print('Time after osm write: ', time.perf_counter() - tic, ' seconds<BR>\r\n')
 print('Number of tiles: ', (gridSE[1] - gridNW[1]) *  (gridSE[0] - gridNW[0]))
 
-# osm2img()
+osm2img()
 
 # Cleaning
 # https://www.geeksforgeeks.org/delete-a-directory-or-file-using-python/
 
-# cleaning()
+cleaning()
 
 print('Total time: ', time.perf_counter() - tic, ' seconds<BR>\r\n')
 
