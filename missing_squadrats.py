@@ -77,35 +77,6 @@ def createGridPoints(gridNW, gridSE, zoom):
       gridPoints.append((lat, lon))
   return gridPoints
 
-def gridForLoop(nodeID, wayID):
-  row = 0
-  for rows in boundingBox: # lat
-    col = 0
-    for cols in rows: # lon
-        # gridNW[0] = xtile = lat = row, gridNW[1] = ytile = lon = col
-      pointCoordinates = num2deg(gridNW[0] + col + 0.5, gridNW[1] + row + 0.5, zoom)
-      point = Point(pointCoordinates[0],pointCoordinates[1])
-#    print(boundingBoxPolygon.contains(point))
-      if boundingBoxPolygon.contains(point):
-        boundingBox[row,col] = 1
-        wayCoordinatesNW = num2deg(gridNW[0] + col, gridNW[1] + row, zoom)
-        wayCoordinatesSE = num2deg(gridNW[0] + col + 1, gridNW[1] + row + 1, zoom)
-        nodes.append((nodeID, wayCoordinatesNW[0], wayCoordinatesNW[1]))
-        nodeID -= 1
-        nodes.append((nodeID, wayCoordinatesSE[0], wayCoordinatesNW[1]))
-        nodeID -= 1
-        nodes.append((nodeID, wayCoordinatesSE[0], wayCoordinatesSE[1]))
-        nodeID -= 1
-        nodes.append((nodeID, wayCoordinatesNW[0], wayCoordinatesSE[1]))
-        nodeID -= 1
-        ways.append((wayID, nodeID + 4, nodeID + 3, nodeID + 2, nodeID + 1, nodeID + 4))
-        wayID -= 1
-#            print(nodeID)
-#          print('Point: ', point, ', row: ', row, ', col: ', col)
-      col += 1
-    row += 1
-  return nodes, ways
-
 def points2lines(tilePoints, nodeID, wayID):
   for x in tilePoints.geoms:
     lat_deg = x.xy[0][0] # lat, xtile, row, index 0, ~60
@@ -222,7 +193,6 @@ def processGrid(data, gridPoints):
                 crossing = 1
       interior.append(boundaryCoords)
     if crossing == 1:
-#      boundingBoxPolygon = boundingBoxPolygon - Polygon(exterior, holes = interior)
       gridPoints = gridPoints - Polygon(exterior, holes = interior)
       crossing = 0
   crossing = 0
@@ -375,8 +345,6 @@ gridNW = deg2num(NWlat, NWlon, zoom)
 gridSE = deg2num(SElat, SElon, zoom)
 print('Grid corners: ', gridNW, ' and ', gridSE, ', dimensions: ', gridSE[1] - gridNW[1], ' and ', gridSE[0] - gridNW[0])
 # https://www.programiz.com/python-programming/matrix np.zeros( (rows, cols) )
-boundingBox = np.zeros( (gridSE[1] - gridNW[1], gridSE[0] - gridNW[0]) )
-boundingBoxPolygon = Polygon([[NWlat,NWlon], [NWlat,SElon], [SElat,SElon], [SElat,NWlon], [NWlat,NWlon]])
 
 data = readKmlFile(kmlFilePath)
 
