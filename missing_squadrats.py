@@ -197,42 +197,6 @@ def processGrid(data, gridPoints):
       crossing = 0
   crossing = 0
   return gridPoints
-  
-def processGridTree(data, gridPoints):
-  i = 0
-  crossing = 0
-  boundaryCoords = []
-  for x in data:
-    if "<LinearRing>" in x:
-      print(data)
-      x = data[i + 1]
-      x = data[i + 1].split("<coordinates>")[1].split("</coordinates>")[0]
-      wayLength = x.count(" ") + 1
-      x = x.replace(" ",",").split(",")
-# https://www.kubeblogs.com/how-to-process-kml-files-with-pythons-shapely-library-for-detecting-geo-boundaries/
-      for y in range(wayLength):
-        lat_deg = float(x[y*2+1])
-        lon_deg = float(x[y*2])
-        boundaryCoords.append((lat_deg, lon_deg))
-        if SElat < lat_deg:
-          if NWlat > lat_deg:
-            if NWlon < lon_deg:
-              if SElon > lon_deg:
-                crossing = 1
-      if "<Polygon>" in data[i - 2]:
-        exterior = boundaryCoords
-        interior = []
-      else:
-        interior.append(boundaryCoords)
-      if crossing == 1 and "</Polygon>" in data[i + 4]:
-#      print(i, ' Time in the end of a polygon: ', time.perf_counter() - tic, ' seconds<BR>\r\n')
-#      boundingBoxPolygon = boundingBoxPolygon - Polygon(exterior, holes = interior)
-        gridPoints = gridPoints - Polygon(exterior, holes = interior)
-        boundaryCoords = []
-        crossing = 0
-      boundaryCoords = []
-    i += 1
-  return gridPoints
 
 def osm2img():
   # Create output dir
@@ -354,7 +318,6 @@ gridPoints = MultiPoint(createGridPoints(gridNW, gridSE, zoom))
 
 print('Time after grid creation: ', time.perf_counter() - tic, ' seconds<BR>\r\n')
 
-#tilePoints = processGridTree(data, gridPoints)
 tilePoints = processGrid(data, gridPoints)
 
 nodes, ways, nodeID, wayID = points2lines(tilePoints, nodeID, wayID)
