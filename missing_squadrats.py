@@ -47,28 +47,6 @@ def readKmlFile(kmlFilePath):
     data = data.split("<name>squadratinhos</name>")[1].split("<name>ubersquadrat</name>")[0].splitlines()
   return data
 
-def createGridLines(gridNW, gridSE, zoom):
-  gridLines = []
-  lines = []
-  for x in range(gridNW[0], gridSE[0], 1): # lat, xtile, row, index 0, ~60
-    for y in range(gridNW[1], gridSE[1], 1): # lon, ytile, col, index 1, ~25
-      lat, lon = num2deg(x, y - 1, zoom)
-      lines.append((lat, lon))
-    gridLines.append(LineString(lines))
-    lines = []
-  print(x, y - 1, lat, lon, )
-  lines = []
-  for x in range(gridNW[1], gridSE[1], 1): # lon, ytile, col, index 1, ~25
-    for y in range(gridNW[0], gridSE[0], 1): # lat, xtile, row, index 0, ~60
-      lat, lon = num2deg(y, x - 1, zoom)
-      lines.append((lat, lon))
-    gridLines.append(LineString(lines))
-    lines = []
-  print(y, x - 1, lat, lon, )
-  print(range(gridNW[0], gridSE[0], 1))
-  print(range(gridNW[1], gridSE[1], 1))
-  return gridLines
-
 def createGridPoints(gridNW, gridSE, zoom):
   gridPoints = []
   for x in range(gridNW[0], gridSE[0], 1): # lat, xtile, row, index 0, ~60
