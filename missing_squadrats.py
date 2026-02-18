@@ -76,42 +76,6 @@ def points2lines(tilePoints, nodeID, wayID):
   nodes.sort(reverse=False)
   return nodes, ways, nodeID, wayID
 
-def points2linesNoDuplicateNodes(tilePoints, nodeID, wayID):
-  nodeID4 = nodeID
-  for x in tilePoints.geoms:
-    lat_deg = x.xy[0][0] # lat, xtile, row, index 0, ~60
-    lon_deg = x.xy[1][0] # lon, ytile, col, index 1, ~25
-#    print(lat_deg, lon_deg)
-    xtile, ytile = deg2num(lat_deg, lon_deg, zoom)
-    tileCoordinatesNW = num2deg(xtile, ytile, zoom)
-    tileCoordinatesSE = num2deg(xtile + 1, ytile + 1, zoom)
-    if (tileCoordinatesNW[0], tileCoordinatesNW[1]) in nodes:
-#      print(nodes.index((tileCoordinatesNW[0], tileCoordinatesNW[1])))
-      nodeID1 = nodeID - nodes.index((tileCoordinatesNW[0], tileCoordinatesNW[1]))
-#      print(len(nodes))
-    else:
-      nodeID1 = nodeID - len(nodes)
-      nodes.append((tileCoordinatesNW[0], tileCoordinatesNW[1]))
-    if (tileCoordinatesSE[0], tileCoordinatesNW[1]) in nodes:
-      nodeID2 = nodeID - nodes.index((tileCoordinatesSE[0], tileCoordinatesNW[1]))
-    else:
-      nodeID2 = nodeID - len(nodes)
-      nodes.append((tileCoordinatesSE[0], tileCoordinatesNW[1]))
-    if (tileCoordinatesSE[0], tileCoordinatesSE[1]) in nodes:
-      nodeID3 = nodeID - nodes.index((tileCoordinatesSE[0], tileCoordinatesSE[1]))
-    else:
-      nodeID3 = nodeID - len(nodes)
-      nodes.append((tileCoordinatesSE[0], tileCoordinatesSE[1]))
-    if (tileCoordinatesNW[0], tileCoordinatesSE[1]) in nodes:
-      nodeID4 = nodeID - nodes.index((tileCoordinatesNW[0], tileCoordinatesSE[1]))
-    else:
-      nodeID4 = nodeID - len(nodes)
-      nodes.append((tileCoordinatesNW[0], tileCoordinatesSE[1]))
-    ways.append((wayID, nodeID1, nodeID2, nodeID3, nodeID4, nodeID1))
-    wayID -= 1
-#  print(ways)
-  return nodes, ways, nodeID, wayID
-
 def shapely2osm(shapelyData, nodeID, wayID):
   with open("newsquadrats.osm", "w") as f:
     f.write("<?xml version='1.0' encoding='UTF-8'?>\n")
