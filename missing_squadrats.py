@@ -5,7 +5,6 @@
 # 1050k 14s python3 missing_squadrats.py squadrats-2026-02-01.kml Olli 23.18334864383624 60.89758612807452 26.992316334266196 59.869643254202145
 # 2101k 14s python3 missing_squadrats.py squadrats-2026-02-01.kml Olli 22.392745132218305 61.10414236956497 27.779438898665266 59.6502656664513
 
-import numpy as np
 import time
 import sys
 import math
@@ -34,13 +33,6 @@ def num2deg(xtile, ytile, zoom):
   lat_deg = math.degrees(lat_rad)
   return (lat_deg, lon_deg)
 
-def readKmlFileTree(kmlFilePath):
-  tree = ET.parse(kmlFilePath)
-  data = ET.tostring(tree, encoding="unicode", pretty_print=True)
-  # print ('Data: \r\n', data, '<BR>\r\n')
-  data = data.split("<name>squadratinhos</name>")[1].split("<name>ubersquadrat</name>")[0].splitlines()
-  return data
-
 def readKmlFile(kmlFilePath):
   with open(kmlFilePath) as f:
     data = f.read()
@@ -53,46 +45,8 @@ def createGridPoints(gridNW, gridSE, zoom):
     for y in range(gridNW[1], gridSE[1], 1): # lon, ytile, col, index 1, ~25
       lat, lon = num2deg(x + 0.5, y - 0.5, zoom)
       gridPoints.append((lat, lon))
+  gridPoints = MultiPoint(gridPoints)
   return gridPoints
-
-def points2lines(tilePoints, nodeID, wayID):
-  for x in tilePoints.geoms:
-    lat_deg = x.xy[0][0] # lat, xtile, row, index 0, ~60
-    lon_deg = x.xy[1][0] # lon, ytile, col, index 1, ~25
-#    print(lat_deg, lon_deg)
-    xtile, ytile = deg2num(lat_deg, lon_deg, zoom)
-    tileCoordinatesNW = num2deg(xtile, ytile, zoom)
-    tileCoordinatesSE = num2deg(xtile + 1, ytile + 1, zoom)
-    nodes.append((nodeID, tileCoordinatesNW[0], tileCoordinatesNW[1]))
-    nodeID -= 1
-    nodes.append((nodeID, tileCoordinatesSE[0], tileCoordinatesNW[1]))
-    nodeID -= 1
-    nodes.append((nodeID, tileCoordinatesSE[0], tileCoordinatesSE[1]))
-    nodeID -= 1
-    nodes.append((nodeID, tileCoordinatesNW[0], tileCoordinatesSE[1]))
-    nodeID -= 1
-    ways.append((wayID, nodeID + 4, nodeID + 3, nodeID + 2, nodeID + 1, nodeID + 4))
-    wayID -= 1
-  nodes.sort(reverse=False)
-  return nodes, ways, nodeID, wayID
-
-def shapely2osm(shapelyData, nodeID, wayID):
-  with open("newsquadrats.osm", "w") as f:
-    f.write("<?xml version='1.0' encoding='UTF-8'?>\n")
-    f.write("<osm version='0.6' upload='false' generator='JOSM'>\n")
-    nodeIDCurr = nodeID
-    for x in nodes:
-      f.write("  <node id='" + str(x[0]) + "' lat='" + str(x[1]) + "' lon='" + str(x[2]) + "' />\n")
-#      f.write("  <node id='" + str(nodeIDCurr) + "' lat='" + str(x[0]) + "' lon='" + str(x[1]) + "' />\n")
-      nodeIDCurr -= 1
-    for x in ways:
-      f.write("  <way id='" + str(x[0]) + "'>\n")
-      for y in x[1:]:
-        f.write("    <nd ref='" + str(y) + "' />\n")
-      f.write("    <tag k='highway' v='primary' />\n  </way>\n")
-#      f.write("  <way id='" + str(x[0]) + "'>\n    <nd ref='" + str(x[1]) + "' />\n    <nd ref='" + str(x[2]) + "' />\n    <nd ref='" + str(x[3]) + "' />\n    <nd ref='" + str(x[4]) + "' />\n    <nd ref='" + str(x[1]) + "' />\n    <tag k='highway' v='primary' />\n  </way>\n")
-    f.write("</osm>\n")
-  return
 
 def processGrid(data, gridPoints):
   crossing = 0
@@ -139,6 +93,40 @@ def processGrid(data, gridPoints):
       crossing = 0
   crossing = 0
   return gridPoints
+
+def points2lines(tilePoints, nodeID, wayID):
+  for x in tilePoints.geoms:
+    lat_deg = x.xy[0][0] # lat, xtile, row, index 0, ~60
+    lon_deg = x.xy[1][0] # lon, ytile, col, index 1, ~25
+    xtile, ytile = deg2num(lat_deg, lon_deg, zoom)
+    tileCoordinatesNW = num2deg(xtile, ytile, zoom)
+    tileCoordinatesSE = num2deg(xtile + 1, ytile + 1, zoom)
+    nodes.append((nodeID, tileCoordinatesNW[0], tileCoordinatesNW[1]))
+    nodeID -= 1
+    nodes.append((nodeID, tileCoordinatesSE[0], tileCoordinatesNW[1]))
+    nodeID -= 1
+    nodes.append((nodeID, tileCoordinatesSE[0], tileCoordinatesSE[1]))
+    nodeID -= 1
+    nodes.append((nodeID, tileCoordinatesNW[0], tileCoordinatesSE[1]))
+    nodeID -= 1
+    ways.append((wayID, nodeID + 4, nodeID + 3, nodeID + 2, nodeID + 1, nodeID + 4))
+    wayID -= 1
+  nodes.sort(reverse=False)
+  return nodes, ways
+
+def shapely2osm(nodes, ways):
+  with open("newsquadrats.osm", "w") as f:
+    f.write("<?xml version='1.0' encoding='UTF-8'?>\n")
+    f.write("<osm version='0.6' upload='false' generator='JOSM'>\n")
+    for x in nodes:
+      f.write("  <node id='" + str(x[0]) + "' lat='" + str(x[1]) + "' lon='" + str(x[2]) + "' />\n")
+    for x in ways:
+      f.write("  <way id='" + str(x[0]) + "'>\n")
+      for y in x[1:]:
+        f.write("    <nd ref='" + str(y) + "' />\n")
+      f.write("    <tag k='highway' v='primary' />\n  </way>\n")
+    f.write("</osm>\n")
+  return
 
 def osm2img():
   # Create output dir
@@ -250,32 +238,36 @@ tic = time.perf_counter()
 gridNW = deg2num(NWlat, NWlon, zoom)
 gridSE = deg2num(SElat, SElon, zoom)
 print('Grid corners: ', gridNW, ' and ', gridSE, ', dimensions: ', gridSE[1] - gridNW[1], ' and ', gridSE[0] - gridNW[0])
-# https://www.programiz.com/python-programming/matrix np.zeros( (rows, cols) )
 
+# Read a kml file and store the squadratinhos polygons
 data = readKmlFile(kmlFilePath)
 
 print('Time after bounding box test: ', time.perf_counter() - tic, ' seconds<BR>\r\n')
 
-gridPoints = MultiPoint(createGridPoints(gridNW, gridSE, zoom))
+# Create a grid of tile centerpoints for the map area
+gridPoints = createGridPoints(gridNW, gridSE, zoom)
 
 print('Time after grid creation: ', time.perf_counter() - tic, ' seconds<BR>\r\n')
 
+# Remove visited tile centerpoints
 tilePoints = processGrid(data, gridPoints)
 
-nodes, ways, nodeID, wayID = points2lines(tilePoints, nodeID, wayID)
+# Create a list of nodes and ways from the unvisited tile centerpoints
+nodes, ways = points2lines(tilePoints, nodeID, wayID)
 
 print('Time before osm write: ', time.perf_counter() - tic, ' seconds<BR>\r\n')
 
-shapely2osm(tilePoints, nodeID, wayID)
+# Create an osm file
+shapely2osm(nodes, ways)
 
 print('Time after osm write: ', time.perf_counter() - tic, ' seconds<BR>\r\n')
 print('Number of tiles: ', (gridSE[1] - gridNW[1]) *  (gridSE[0] - gridNW[0]))
 
+# Create an img file from the osm file
 osm2img()
 
-# Cleaning
+# Remove temporary files
 # https://www.geeksforgeeks.org/delete-a-directory-or-file-using-python/
-
 cleaning()
 
 print('Total time: ', time.perf_counter() - tic, ' seconds<BR>\r\n')
@@ -284,7 +276,6 @@ timeNow = datetime.datetime.now()
 timeStamp = timeNow.strftime("%d.%m.%Y %H:%M:%S")
 timeTotal = time.perf_counter() - tic
 
-#logFile.write(timeStamp + ";" + userName + ";" + str(timeTotal) + ";" + str(numberOfWays) + "\n")
 logFile.write(timeStamp + ";" + userName + ";" + str(timeTotal) + "\n")
 
 logFile.close()
