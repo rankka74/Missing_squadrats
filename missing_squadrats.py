@@ -5,15 +5,14 @@
 # 1050k 14s python3 missing_squadrats.py squadrats-2026-02-01.kml Olli 23.18334864383624 60.89758612807452 26.992316334266196 59.869643254202145
 # 2101k 14s python3 missing_squadrats.py squadrats-2026-02-01.kml Olli 22.392745132218305 61.10414236956497 27.779438898665266 59.6502656664513
 
-import time
 import sys
-import math
 import os
-import lxml.etree as ET
+import time
+import math
 from shapely.geometry import Point, Polygon, LineString, MultiLineString, MultiPoint
-import shutil
 import datetime
 from pathlib import Path
+import shutil
 import subprocess
 
 # https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
@@ -138,15 +137,12 @@ def osm2img():
   except OSError as error: 
     print(error) 
   abs_osmfile_path = abs_dir_path / "newsquadrats.osm"
-  # abs_osmgridfile_path = abs_dir_path / "newsquadratsgrid.osm"
 
   shutil.move("newsquadrats.osm", abs_osmfile_path)
-  # shutil.move("newsquadratsgrid.osm", abs_osmgridfile_path)
 
 # Create Garmin map
 # https://peatfaerie.medium.com/how-to-create-a-tile-grid-overlay-for-the-garmin-edge-based-on-veloviewer-unexplored-tiles-5b36e7c401bd
   abs_mkgmapfile_path = Path(abs_dir_path).parent / "src" / "ext" / "mkgmap-r4916" / "mkgmap.jar"
-# print(abs_mkgmapfile_path)
   mkgmap_output_path = "--output-dir=" + str(abs_dir_path)
   mkgmap_family_id = "--family-id=" + str(int(dir) - 20200000)
   mkgmap_description = "--description=" + "squadrats-" + str(int(dir))
@@ -156,7 +152,6 @@ def osm2img():
   mkgmap_typ_path = str(missing_squadrats_dir) + "typ.txt"
   mkgmap_style_path = "--style-file=" + str(missing_squadrats_dir) + "mkgmap.style"
   mkgmap_input = "--input-file=" + str(abs_osmfile_path)
-  # mkgmap_inputgrid = "--input-file=" + str(abs_osmgridfile_path)
 
 # print(["java", "-ea", "-jar", abs_mkgmapfile_path, mkgmap_config_path, mkgmap_family_id, mkgmap_mapname, mkgmap_overview_mapnumber, mkgmap_style_path, mkgmap_typ_path, mkgmap_description, mkgmap_input, mkgmap_inputgrid, mkgmap_output_path])
 # subprocess.run(["java", "-ea", "-jar", abs_mkgmapfile_path, mkgmap_config_path, mkgmap_family_id, mkgmap_mapname, mkgmap_overview_mapnumber, mkgmap_style_path, mkgmap_typ_path, mkgmap_description, mkgmap_input, mkgmap_inputgrid, mkgmap_output_path])
@@ -167,7 +162,6 @@ def osm2img():
   new_name_file = "squadrats-" + str(int(dir)) + "-" + userName + ".img"
   new_name = abs_dir_path / new_name_file
   os.rename(old_name, new_name)
-# print(new_name)
   new_img_dir = missing_squadrats_dir + "../../www/missing_squadrats/img/"
   shutil.copy(new_name, new_img_dir)
   return
