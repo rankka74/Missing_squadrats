@@ -1,0 +1,8 @@
+family-id: 30807
+product-id: 1
+latin1
+draw-priority: 100
+style-file: ../../src/missing_tiles/mkgmap.style
+transparent
+gmapsupp
+mapname: 63270806

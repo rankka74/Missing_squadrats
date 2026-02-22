@@ -1,0 +1,2 @@
+#!/usr/bin/bash
+python3 /var/www/10/oranta/sites/oranta.kapsi.fi/src/missing_squadrats/missing_squadrats.py squadrats-2024-03-15.kml Olli 24.729193556874787 60.248687592128285 25.135001051991974 60.14323002608291 >> /home/users/oranta/missingSquadrats.log 2>&1

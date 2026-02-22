@@ -1,0 +1,41 @@
+[_line]
+Type=0x01
+UseOrientation=N
+LineWidth=5
+Xpm="0 0 1 0"
+"1 c #853A3A"
+String=solid line
+FontStyle=NoLabel
+[end]
+
+[_line]
+Type=0x02
+UseOrientation=N
+LineWidth=1
+Xpm="0 0 1 0"
+"1 c #FF00FF"
+String=solid line
+FontStyle=NoLabel
+[end]
+
+[_polygon]
+Type=0x10f0b
+;GRMN_TYPE: Customizable Areas/CUSTOMIZABLE_AREA_12/Customizable area/Non NT, NT
+String1=0x00,Maatuva vesialue
+ExtendedLabels=N
+Xpm="0 0 1 0"
+"1 c #80A3FF"
+[end]
+
+[_polygon]
+Type=0x17
+String1=0x04,Meadow
+String2=0x01,Prairie
+String3=0x03,Weide
+ExtendedLabels=Y
+FontStyle=NoLabel (invisible)
+CustomColor=No
+Xpm="0 0 2 0"
+"1 c #ffb4b4"
+"2 c #000000"
+[end]

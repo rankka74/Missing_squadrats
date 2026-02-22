@@ -1,0 +1,12 @@
+<<<version>>>
+0
+<<<info>>>
+version : 1.0
+<<<options>>>
+levels: 0:24, 1:22, 2:20, 3:18, 4:16
+<<<lines>>>
+highway=primary [0x1 level 3]
+highway=secondary [0x2 level 3]
+<<<polygons>>>
+kohdeluokka=38300 {add area=yes} [0x10f0b level 1] #Maatuva vesialue
+landuse=meadow | landuse=grass | landcover=grass [0x17 resolution 22]
