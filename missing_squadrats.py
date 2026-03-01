@@ -153,10 +153,9 @@ def osm2img():
   mkgmap_style_path = "--style-file=" + str(missing_squadrats_dir) + "mkgmap.style"
   mkgmap_input = "--input-file=" + str(abs_osmfile_path)
 
-# print(["java", "-ea", "-jar", abs_mkgmapfile_path, mkgmap_config_path, mkgmap_family_id, mkgmap_mapname, mkgmap_overview_mapnumber, mkgmap_style_path, mkgmap_typ_path, mkgmap_description, mkgmap_input, mkgmap_inputgrid, mkgmap_output_path])
+  print(["java", "-ea", "-jar", abs_mkgmapfile_path, "--transparent", "--gmapsupp", mkgmap_family_id, mkgmap_mapname, mkgmap_overview_mapnumber, mkgmap_style_path, mkgmap_description, mkgmap_input, mkgmap_output_path, mkgmap_typ_path])
 # subprocess.run(["java", "-ea", "-jar", abs_mkgmapfile_path, mkgmap_config_path, mkgmap_family_id, mkgmap_mapname, mkgmap_overview_mapnumber, mkgmap_style_path, mkgmap_typ_path, mkgmap_description, mkgmap_input, mkgmap_inputgrid, mkgmap_output_path])
-  subprocess.run(["java", "-ea", "-jar", abs_mkgmapfile_path, mkgmap_config_path, mkgmap_family_id, mkgmap_mapname, mkgmap_overview_mapnumber, mkgmap_style_path, mkgmap_typ_path, mkgmap_description, mkgmap_input, mkgmap_output_path])
-
+  subprocess.run(["java", "-ea", "-jar", abs_mkgmapfile_path, "--transparent", "--gmapsupp", mkgmap_family_id, mkgmap_mapname, mkgmap_overview_mapnumber, mkgmap_style_path, mkgmap_description, mkgmap_input, mkgmap_output_path, mkgmap_typ_path])
 # Rename map file
   old_name = abs_dir_path / "gmapsupp.img"
   new_name_file = "squadrats-" + str(int(dir)) + "-" + userName + ".img"

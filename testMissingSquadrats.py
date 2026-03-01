@@ -33,7 +33,7 @@ if len(jobsDirContent) > 0 and not(os.path.exists(os.path.join(jobsPath, "inProc
 #  with open(os.path.join(jobsPath, "inProcess"), 'w') as fp:
 #    pass
   # Run the latest runMissingSquadrats
-  os.system('sh ' + jobsDirContent[0] + ' >> /home/users/oranta/missingSquadrats.log 2>&1')
+  os.system('sh ' + jobsDirContent[0] + ' >> logPath 2>&1')
   # Check if the run was succesfull and remove the inProgress file
   text_to_append = datetime.datetime.now()
   append_text_to_file(logPath, text_to_append.strftime("%Y.%m.%d %H:%M:%S"))

@@ -61,7 +61,11 @@ if (move_uploaded_file($tmpName, $target_file)) {
 
 $kmlFileNameName = str_replace(".kml", "-" . $userName . ".kml", $kmlFileName);
 #echo "KML file name name: " . $kmlFileNameName . "<BR>\r\n";
-$command = "/home/users/oranta/python3/venv/bin/python3 /var/www/10/oranta/sites/oranta.kapsi.fi/src/missing_squadrats/missing_squadrats-beta.py $kmlFileNameName $userName $NWlon $NWlat $SElon $SElat >> /home/users/oranta/missingSquadrats.log 2>&1";
+if (end(explode('/',__DIR__)) == "beta") {
+  $command = "/home/users/oranta/python3/venv/bin/python3 /var/www/10/oranta/sites/oranta.kapsi.fi/src/missing_squadrats/beta/missing_squadrats.py $kmlFileNameName $userName $NWlon $NWlat $SElon $SElat >> /home/users/oranta/missingSquadrats.log 2>&1";
+} else {
+  $command = "/home/users/oranta/python3/venv/bin/python3 /var/www/10/oranta/sites/oranta.kapsi.fi/src/missing_squadrats/missing_squadrats.py $kmlFileNameName $userName $NWlon $NWlat $SElon $SElat >> /home/users/oranta/missingSquadrats.log 2>&1";
+}
 
 
 #$output = exec("export PYTHONPATH=/home/users/oranta/.local/lib/python3.9/site-packages && python3 ../../src/missing_squadrats/missing_squadrats.py", $target_file, "2>&1", $out, $status);
