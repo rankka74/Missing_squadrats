@@ -193,6 +193,11 @@ def cleaning():
   if os.path.exists(fileToRemove):
     os.remove(fileToRemove)
     print("shFile removed")
+  fileToRemove = os.path.join(baseDir, "jobs", "missing_squadrats", kmlFile.replace(".kml", ".csv"))
+  print("File to removed: " + fileToRemove)
+  if os.path.exists(fileToRemove):
+    os.remove(fileToRemove)
+    print("csvFile removed")
   return
 
 # Arguments
