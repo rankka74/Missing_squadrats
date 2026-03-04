@@ -220,11 +220,15 @@ function getCookieByName(name) {
 if (getCookie("MissingSquadrats") == null) {
 	var latCenter = 60.24;
 	var lonCenter = 24.90;
+  var squadratinhosColor = "#853A3A";
+  var squadratinhosLineWeight = 5;
 }
 else {
 	var data = JSON.parse(getCookieByName("MissingSquadrats"));
-	var latCenter = data.latCenter;
-	var lonCenter = data.lonCenter;
+	var latCenter = data.mapCenterLat;
+	var lonCenter = data.mapCenterLon;
+  var squadratinhosColor = data.squadratinhosColor;
+  var squadratinhosLineWeight = data.squadratinhosLineWeight;
 }
 
 // https://leafletjs.com/examples/zoom-levels/
@@ -251,7 +255,8 @@ if (tiles > maxNumberOfSquadrats) {
 } else {
 	document.getElementById("submitButton").disabled = false;
 }
-
+document.getElementById("squadratinhosColor").value = squadratinhosColor;
+document.getElementById("squadratinhosLineWeight").value = squadratinhosLineWeight;
 
 // https://stackoverflow.com/questions/32734897/how-to-get-map-box-coordinates-from-marker-in-leaflet
 map.on('moveend', function() {

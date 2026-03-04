@@ -32,10 +32,14 @@ if (!$NWlon || !$NWlat || !$SElon || !$SElat) {
 
 if ($saveCookie) {
   # $mapCenter = array("latCenter"=>61.24, "lonCenter"=>24.90);
-  $mapCenter = array("latCenter"=>$SElat + (($NWlat - $SElat) / 2), "lonCenter"=>$SElon + (($NWlon - $SElon) / 2));
+  $missinSquadrats = array("mapCenterLat"=>$SElat + (($NWlat - $SElat) / 2),
+  "mapCenterLon"=>$SElon + (($NWlon - $SElon) / 2),
+  "squadratinhosLineWeight"=>$squadratinhosLineWeight,
+  "squadratinhosColor"=>"#" . $squadratinhosColor);
+  # $squadratinhos = array("squadratinhosLineWeight"=>$squadratinhosLineWeight, "squadratinhosColor"=>$squadratinhosColor);
   # https://www.w3schools.com/php/php_cookies.asp
   # https://stackoverflow.com/questions/32567709/how-to-store-raw-json-string-in-cookie-with-php
-  setcookie("MissingSquadrats", json_encode($mapCenter), time() + (86400 * 30)); // 86400 = 1 day
+  setcookie("MissingSquadrats", json_encode($missinSquadrats), time() + (86400 * 30)); // 86400 = 1 day
 }
 
 # https://stackoverflow.com/questions/14114411/remove-characters-that-arent-letters-and-numbers-replace-space-with-a-hyphen
