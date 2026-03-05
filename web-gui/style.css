@@ -1,0 +1,523 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+	--clr-bg: #f0f4f8;
+	--clr-surface: #ffffff;
+	--clr-primary: #2563eb;
+	--clr-primary-dk: #1d4ed8;
+	--clr-accent: #0ea5e9;
+	--clr-text: #1e293b;
+	--clr-muted: #64748b;
+	--clr-border: #e2e8f0;
+	--clr-success: #16a34a;
+	--radius: 12px;
+	--shadow-sm: 0 1px 4px rgba(0, 0, 0, .07);
+	--shadow-md: 0 4px 18px rgba(0, 0, 0, .10);
+	--transition: .18s ease;
+	--max-w: 940px;
+	--card-pad-v: 1.25rem;
+	--card-pad-h: 1.75rem;
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+body {
+	font-family: 'Inter', system-ui, sans-serif;
+	background: var(--clr-bg);
+	color: var(--clr-text);
+	line-height: 1.6;
+	padding: 2.5rem 1.5rem 5rem;
+	min-height: 100vh;
+}
+
+body > * {
+	max-width: var(--max-w);
+	margin-left: auto;
+	margin-right: auto;
+	display: block;
+}
+
+body > hr,
+body > p:first-child,
+body > p:nth-child(5) {
+	display: none;
+}
+
+body > h1 {
+	font-size: clamp(1.45rem, 3vw, 2rem);
+	font-weight: 700;
+	color: var(--clr-primary);
+	letter-spacing: -0.025em;
+	margin-bottom: 1.75rem;
+	padding-bottom: .75rem;
+	border-bottom: 3px solid var(--clr-primary);
+}
+
+body > h1::before {
+	content: "🗺️  ";
+}
+
+body > form {
+	background: var(--clr-surface);
+	border: 1px solid var(--clr-border);
+	border-radius: var(--radius);
+	box-shadow: var(--shadow-md);
+	padding: 1.75rem 2rem;
+	margin-bottom: 1.5rem;
+	font-size: .875rem;
+	color: var(--clr-muted);
+	font-weight: 500;
+}
+
+body > form br {
+	content: "";
+	display: block;
+	margin: .4rem 0;
+}
+
+#name {
+	display: block;
+	width: 100%;
+	max-width: 280px;
+	border: 1.5px solid var(--clr-border);
+	border-radius: 7px;
+	padding: .45rem .8rem;
+	font-size: .9rem;
+	font-family: inherit;
+	color: var(--clr-text);
+	background: var(--clr-bg);
+	margin: .25rem 0 1rem;
+	transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+#name:focus {
+	outline: none;
+	border-color: var(--clr-primary);
+	box-shadow: 0 0 0 3px rgba(37, 99, 235, .15);
+}
+
+#fileToUpload {
+	display: block;
+	font-size: .85rem;
+	color: var(--clr-muted);
+	margin: .25rem 0 1rem;
+}
+
+#NWlon,
+#NWlat,
+#SElon,
+#SElat {
+	border: 1.5px solid var(--clr-border);
+	border-radius: 7px;
+	padding: .38rem .65rem;
+	font-size: .8rem;
+	font-family: 'Courier New', monospace;
+	color: var(--clr-text);
+	background: var(--clr-bg);
+	width: 10rem;
+	margin: 0 .4rem .25rem 0;
+	transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+#NWlon:focus,
+#NWlat:focus,
+#SElon:focus,
+#SElat:focus {
+	outline: none;
+	border-color: var(--clr-accent);
+	box-shadow: 0 0 0 3px rgba(14, 165, 233, .14);
+}
+
+#cookie {
+	accent-color: var(--clr-primary);
+	width: 1rem;
+	height: 1rem;
+	cursor: pointer;
+	vertical-align: middle;
+	margin-right: .35rem;
+}
+
+label[for="cookie"] {
+	font-size: .875rem;
+	color: var(--clr-muted);
+	cursor: pointer;
+	user-select: none;
+}
+
+#submitButton {
+	display: inline-block;
+	background: var(--clr-primary);
+	color: #fff;
+	border: none;
+	border-radius: 8px;
+	padding: .6rem 1.8rem;
+	font-size: .9rem;
+	font-weight: 600;
+	font-family: inherit;
+	cursor: pointer;
+	transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+	box-shadow: 0 2px 8px rgba(37, 99, 235, .3);
+	margin-top: .9rem;
+}
+
+#submitButton:hover:not(:disabled) {
+	background: var(--clr-primary-dk);
+	transform: translateY(-2px);
+	box-shadow: 0 4px 14px rgba(37, 99, 235, .4);
+}
+
+#submitButton:disabled {
+	background: #94a3b8;
+	cursor: not-allowed;
+	transform: none;
+	box-shadow: none;
+}
+
+#tilesNumber {
+	font-weight: 700;
+	color: var(--clr-primary);
+	font-size: 1.05rem;
+}
+
+#map {
+	width: 100% !important;
+	height: 520px !important;
+	border-radius: var(--radius);
+	box-shadow: var(--shadow-md);
+	border: 1px solid var(--clr-border);
+	overflow: hidden;
+	margin-bottom: 1.5rem;
+}
+
+/* Nää kaikki nth-child selectorit johtuu siitä ettei oo nimettyjä wrappereita, vähän kludge. Sais tehtyä siistimminkin. */
+
+body > p:nth-child(9),
+body > p:nth-child(12),
+body > p:nth-child(15),
+body > p:nth-child(17),
+body > p:nth-child(20) {
+	background: var(--clr-surface);
+	border: 1px solid var(--clr-border);
+	border-bottom: none;
+	border-radius: var(--radius) var(--radius) 0 0;
+	padding: var(--card-pad-v) var(--card-pad-h) .6rem;
+	margin-bottom: 0;
+	font-weight: 700;
+	font-size: 1rem;
+	color: var(--clr-text);
+	box-shadow: var(--shadow-sm);
+	position: relative;
+}
+
+body > p:nth-child(9)::after,
+body > p:nth-child(12)::after,
+body > p:nth-child(17)::after,
+body > p:nth-child(20)::after {
+	content: "";
+	display: block;
+	height: 2px;
+	background: var(--clr-border);
+	margin-top: .6rem;
+	margin-left: calc(-1 * var(--card-pad-h));
+	margin-right: calc(-1 * var(--card-pad-h));
+}
+
+body > p:nth-child(9)::before {
+	content: "📦  ";
+}
+
+body > p:nth-child(12)::before {
+	content: "📋  ";
+}
+
+body > p:nth-child(15)::before {
+	content: "📷  ";
+}
+
+body > p:nth-child(17)::before {
+	content: "⌚  ";
+}
+
+body > p:nth-child(19)::before {
+	content: "✅  ";
+}
+
+body > ul:nth-child(10),
+body > ul:nth-child(13),
+body > ul:nth-child(18),
+body > ul:nth-child(21) {
+	background: var(--clr-surface);
+	border: 1px solid var(--clr-border);
+	border-top: none;
+	border-radius: 0 0 var(--radius) var(--radius);
+	padding: .9rem var(--card-pad-h) var(--card-pad-v);
+	margin-top: 0;
+	margin-bottom: 1.25rem;
+	box-shadow: var(--shadow-sm);
+}
+
+body > p:nth-child(15) {
+	border-radius: var(--radius);
+	border-bottom: 1px solid var(--clr-border);
+	padding-bottom: var(--card-pad-v);
+	margin-bottom: 1.25rem;
+}
+
+body > p:nth-child(15)::after {
+	display: none;
+}
+
+body > p:nth-child(15) img {
+	display: inline-block;
+	max-width: 48%;
+	border-radius: 8px;
+	margin-top: .85rem;
+	margin-right: .5rem;
+	border: 1px solid var(--clr-border);
+	vertical-align: top;
+}
+
+body > ul:nth-child(10) {
+	list-style: none;
+	display: flex;
+	flex-wrap: wrap;
+	gap: .45rem;
+}
+
+body > ul:nth-child(10) li a {
+	display: inline-flex;
+	align-items: center;
+	gap: .3rem;
+	padding: .3rem .9rem;
+	background: var(--clr-bg);
+	border: 1.5px solid var(--clr-border);
+	border-radius: 999px;
+	font-size: .78rem;
+	font-weight: 500;
+	color: var(--clr-primary);
+	text-decoration: none;
+	transition: all var(--transition);
+}
+
+body > ul:nth-child(10) li a::before {
+	content: "⬇  ";
+	font-size: .65rem;
+}
+
+body > ul:nth-child(10) li a:hover {
+	background: var(--clr-primary);
+	border-color: var(--clr-primary);
+	color: #fff;
+	transform: translateY(-1px);
+	box-shadow: 0 2px 8px rgba(37, 99, 235, .25);
+	text-decoration: none;
+}
+
+body > ul:nth-child(13) {
+	list-style: none;
+	counter-reset: step;
+}
+
+body > ul:nth-child(13) > li {
+	counter-increment: step;
+	position: relative;
+	padding: .55rem .5rem .55rem 2.5rem;
+	font-size: .9rem;
+	border-bottom: 1px solid var(--clr-border);
+}
+
+body > ul:nth-child(13) > li:last-child {
+	border-bottom: none;
+}
+
+body > ul:nth-child(13) > li::before {
+	content: counter(step);
+	position: absolute;
+	left: 0;
+	top: .5rem;
+	background: var(--clr-primary);
+	color: #fff;
+	font-size: .7rem;
+	font-weight: 700;
+	width: 1.6rem;
+	height: 1.6rem;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+/* Aspect ratio chooser */
+
+#ar-chooser {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: .5rem;
+	max-width: 940px;
+	margin: 0 auto 0.6rem;
+	padding: .65rem 1rem;
+	background: #ffffff;
+	border: 1px solid #e2e8f0;
+	border-radius: 10px;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, .07);
+	font-family: 'Inter', system-ui, sans-serif;
+	font-size: .82rem;
+	color: #64748b;
+}
+
+#ar-chooser .ar-label {
+	font-weight: 600;
+	color: #1e293b;
+	margin-right: .25rem;
+	white-space: nowrap;
+}
+
+#ar-chooser .ar-presets {
+	display: flex;
+	gap: .35rem;
+	flex-wrap: wrap;
+}
+
+#ar-chooser .ar-btn {
+	padding: .3rem .75rem;
+	border: 1.5px solid #e2e8f0;
+	border-radius: 6px;
+	background: #f0f4f8;
+	color: #1e293b;
+	font-family: inherit;
+	font-size: .82rem;
+	font-weight: 500;
+	cursor: pointer;
+	transition: all .15s ease;
+	white-space: nowrap;
+}
+
+#ar-chooser .ar-btn:hover {
+	border-color: #2563eb;
+	color: #2563eb;
+	background: #eff6ff;
+}
+
+#ar-chooser .ar-btn.active {
+	background: #2563eb;
+	border-color: #2563eb;
+	color: #fff;
+}
+
+#ar-chooser .ar-divider {
+	width: 1px;
+	height: 1.6rem;
+	background: #e2e8f0;
+	margin: 0 .15rem;
+	flex-shrink: 0;
+}
+
+#ar-chooser .ar-rotate-btn {
+	padding: .3rem .65rem;
+	border: 1.5px solid #e2e8f0;
+	border-radius: 6px;
+	background: #f0f4f8;
+	color: #64748b;
+	font-family: inherit;
+	font-size: .85rem;
+	cursor: pointer;
+	transition: all .15s ease;
+	display: flex;
+	align-items: center;
+	gap: .3rem;
+	white-space: nowrap;
+	font-weight: 500;
+}
+
+#ar-chooser .ar-rotate-btn:hover {
+	border-color: #0ea5e9;
+	color: #0ea5e9;
+	background: #f0f9ff;
+}
+
+#ar-chooser .ar-rotate-btn.active {
+	background: #0ea5e9;
+	border-color: #0ea5e9;
+	color: #fff;
+}
+
+#ar-chooser .ar-rotate-icon {
+	display: inline-block;
+	transition: transform .3s ease;
+	font-style: normal;
+	font-size: 1rem;
+	line-height: 1;
+}
+
+#ar-chooser .ar-rotate-btn.active .ar-rotate-icon {
+	transform: rotate(90deg);
+}
+
+#ar-chooser .ar-custom {
+	display: flex;
+	align-items: center;
+	gap: .35rem;
+}
+
+#ar-chooser .ar-custom input {
+	width: 4rem;
+	border: 1.5px solid #e2e8f0;
+	border-radius: 6px;
+	padding: .28rem .5rem;
+	font-size: .82rem;
+	font-family: inherit;
+	color: #1e293b;
+	background: #f0f4f8;
+	text-align: center;
+	transition: border-color .15s, box-shadow .15s;
+}
+
+#ar-chooser .ar-custom input:focus {
+	outline: none;
+	border-color: #2563eb;
+	box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
+	background: #fff;
+}
+
+#ar-chooser .ar-custom .ar-sep {
+	font-weight: 700;
+	color: #94a3b8;
+	font-size: .9rem;
+}
+
+#ar-chooser .ar-custom button {
+	padding: .3rem .65rem;
+	border: 1.5px solid #e2e8f0;
+	border-radius: 6px;
+	background: #f0f4f8;
+	color: #1e293b;
+	font-family: inherit;
+	font-size: .78rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition: all .15s ease;
+}
+
+#ar-chooser .ar-custom button:hover {
+	background: #2563eb;
+	border-color: #2563eb;
+	color: #fff;
+}
+
+#ar-chooser .ar-display {
+	margin-left: auto;
+	font-size: .75rem;
+	color: #94a3b8;
+	font-variant-numeric: tabular-nums;
+	white-space: nowrap;
+}
+
+#ar-chooser .ar-display strong {
+	color: #2563eb;
+	font-weight: 600;
+}

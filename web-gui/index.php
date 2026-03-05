@@ -15,10 +15,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-ajax/2.1.0/leaflet.ajax.min.js"></script>
 
-<style>
-#map { height: 80vh;
-width: 80%}
-</style>
+<link rel="stylesheet" href="style.css">
 
 </head>
 <body>
@@ -315,6 +312,8 @@ function lat2tile(lat,zoom) {
 }
 
 </script>
+
+<script src="aspect-ratio-chooser.js"></script>
 
 </body>
 </html>
