@@ -123,8 +123,37 @@ def shapely2osm(nodes, ways):
       f.write("  <way id='" + str(x[0]) + "'>\n")
       for y in x[1:]:
         f.write("    <nd ref='" + str(y) + "' />\n")
-      f.write("    <tag k='highway' v='primary' />\n  </way>\n")
+      f.write("    <tag k='type' v='squadratinhos' />\n  </way>\n")
     f.write("</osm>\n")
+  return
+
+def writeMkgmapStyleTyp(squadratinhosLineWeight, squadratinhosColor, script_dir):
+  mkgmapStyle = ["<<<version>>>",
+"0",
+"<<<info>>>",
+"version : 1.0",
+"<<<options>>>",
+"<<<lines>>>",
+"type=squadratinhos [0x1d resolution 20]",
+"type=squadrats [0x1e resolution 20]",
+"type=grid [0x1f resolution 20]"]
+
+  typTxt = ["[_line]",
+"Type=0x1d",
+"UseOrientation=N",
+"LineWidth=" + squadratinhosLineWeight,
+"Xpm=\"0 0 1 0\"",
+"\"a c " + squadratinhosColor + "\"",
+"FontStyle=NoLabel",
+"[end]"]
+
+  with open(script_dir + "mkgmap.style", 'w') as file:
+    data_to_write = '\n'.join(mkgmapStyle)
+    file.write(data_to_write)
+
+  with open(script_dir + "typ.txt", 'w') as file:
+    data_to_write = '\n'.join(typTxt)
+    file.write(data_to_write)
   return
 
 def osm2img():
@@ -203,12 +232,17 @@ def cleaning():
 # Arguments
 
 arguments = sys.argv
+print(arguments)
 kmlFile = arguments[1]
 userName = arguments[2]
 NWlon = float(arguments[3]) # lon, ytile, col, index 1, ~25
 NWlat = float(arguments[4]) # lat, xtile, row, index 0, ~60
 SElon = float(arguments[5]) # lon, ytile, col, index 1, ~25
 SElat = float(arguments[6]) # lat, xtile, row, index 0, ~60
+squadratinhosLineWeight = arguments[7]
+squadratinhosColor = "#" + arguments[8]
+# squadratinhosLineWidth = "4"
+# squadratinhosColor = "#44a832"
 
 # Variables
 
@@ -219,7 +253,7 @@ script_dir = os.path.dirname(__file__) + "/" #<-- absolute dir the script is in
 missing_squadrats_dir = script_dir
 kmlFilePath = missing_squadrats_dir + '../../jobs/missing_squadrats/' + kmlFile
 # kmlFilePath = kmlFile
-print ('KML file: ', kmlFile, '<BR>\r\n')
+print('KML file: ', kmlFile, '<BR>\r\n')
 
 nodes = []
 ways = []
@@ -254,6 +288,9 @@ tilePoints = processGrid(data, gridPoints)
 nodes, ways = points2lines(tilePoints, nodeID, wayID)
 
 print('Time before osm write: ', time.perf_counter() - tic, ' seconds<BR>\r\n')
+
+# Create mkgmap mkgmap.style and typ.txt
+writeMkgmapStyleTyp(squadratinhosLineWeight, squadratinhosColor, script_dir)
 
 # Create an osm file
 shapely2osm(nodes, ways)

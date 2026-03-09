@@ -39,6 +39,10 @@ width: 80%}
   <input type="text" id="SElon" name="SElon" value="26.2">
   SE lat
   <input type="text" id="SElat" name="SElat" value="59.8"><br>
+  Line color
+  <input type="color" id="squadratinhosColor" name="squadratinhosColor" value="#853A3A">
+  Line weight
+  <input type="number" id="squadratinhosLineWeight" name="squadratinhosLineWeight" min="1" max="5" value="5">
   <input type="checkbox" id="cookie" name="cookie" value="cookie">
   <label for="cookie"> Save map location into a cookie</label><br>
   <input type="submit" id="submitButton" value="Upload kml file" name="submit"><br>
@@ -216,11 +220,25 @@ function getCookieByName(name) {
 if (getCookie("MissingSquadrats") == null) {
 	var latCenter = 60.24;
 	var lonCenter = 24.90;
+  var squadratinhosColor = "#853A3A";
+  var squadratinhosLineWeight = 5;
 }
 else {
 	var data = JSON.parse(getCookieByName("MissingSquadrats"));
-	var latCenter = data.latCenter;
-	var lonCenter = data.lonCenter;
+  if (typeof data.mapCenterLat === 'undefined') {
+    var latCenter = data.latCenter;
+  }
+  else {
+    var latCenter = data.mapCenterLat;
+  }
+  if (typeof data.mapCenterLon === 'undefined') {
+    var lonCenter = data.lonCenter;
+  }
+  else {
+    var lonCenter = data.mapCenterLon;
+  }
+  var squadratinhosColor = data.squadratinhosColor;
+  var squadratinhosLineWeight = data.squadratinhosLineWeight;
 }
 
 // https://leafletjs.com/examples/zoom-levels/
@@ -247,7 +265,8 @@ if (tiles > maxNumberOfSquadrats) {
 } else {
 	document.getElementById("submitButton").disabled = false;
 }
-
+document.getElementById("squadratinhosColor").value = squadratinhosColor;
+document.getElementById("squadratinhosLineWeight").value = squadratinhosLineWeight;
 
 // https://stackoverflow.com/questions/32734897/how-to-get-map-box-coordinates-from-marker-in-leaflet
 map.on('moveend', function() {

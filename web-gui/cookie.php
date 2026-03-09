@@ -5,6 +5,7 @@
 $cookie_name = "user";
 # $cookie_value = "John Doe";
 $mapCenter = array("latCenter"=>61.24, "lonCenter"=>24.90);
+$squadratinhos = array("squadratinhosLineWeight"=>5, "squadratinhosColor"=>"#853A3A");
 # https://www.w3schools.com/php/php_cookies.asp
 # https://stackoverflow.com/questions/32567709/how-to-store-raw-json-string-in-cookie-with-php
 setcookie("MissingSquadrats", json_encode($mapCenter), time() + (86400 * 30)); // 86400 = 1 day
@@ -13,14 +14,11 @@ setcookie("MissingSquadrats", json_encode($mapCenter), time() + (86400 * 30)); /
 <html>
 <head>
 
-
 </head>
 <body>
 
 <p>
 <h1>Cookie test</h1>
-
-
 
 <script>
 
@@ -63,15 +61,18 @@ function getCookieByName(name) {
 if (getCookie("MissingSquadrats") == null) {
 	var latCenter = 60.24;
 	var lonCenter = 24.90;
+  var squadratinhosColor = "#853A3A";
+  var squadratinhosLineWeight = 5;
 	alert("ok");
 }
 else {
 	var data = JSON.parse(getCookieByName("MissingSquadrats"));
 	var latCenter = data.latCenter;
 	var lonCenter = data.lonCenter;
+  var squadratinhosColor = data.squadratinhosColor;
+  var squadratinhosLineWeight = data.squadratinhosLineWeight;
 	alert(lonCenter);
 }
-
 
 </script>
 

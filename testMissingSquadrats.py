@@ -32,8 +32,15 @@ if len(jobsDirContent) > 0:
   append_text_to_file(logPath, text_to_append.strftime("%Y.%m.%d %H:%M:%S"))
   with open(jobsDirContent[0]) as f:
     arguments = f.read().split(",")
-  command = arguments[0] + ".kml " + arguments[1] + " " + arguments[2] + " " + arguments[3] + " " + arguments[4] + " " + arguments[5]
-  print(command)
+  i = 0
+  for x in arguments:
+    if i == 0:
+      command = x + ".kml"
+      i = 1
+    else:
+      command = command + " " + x
+  # command = arguments[0] + ".kml " + arguments[1] + " " + arguments[2] + " " + arguments[3] + " " + arguments[4] + " " + arguments[5]
+  print("Test: " + command)
   # Run the latest runMissingSquadrats
   os.system("/home/users/oranta/python3/venv/bin/python3 " + scriptPath + "missing_squadrats.py " + command + " >> " + logPath + " 2>&1")
   text_to_append = datetime.datetime.now()
