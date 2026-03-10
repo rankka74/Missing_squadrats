@@ -15,15 +15,11 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-ajax/2.1.0/leaflet.ajax.min.js"></script>
 
-<style>
-#map { height: 80vh;
-width: 80%}
-</style>
+<link rel="stylesheet" href="style.css">
 
 </head>
 <body>
 
-<p>
 <h1>A squadratinhos map layer for Garmin</h1>
 
 <form action="upload.php" method="post" enctype="multipart/form-data">
@@ -50,16 +46,10 @@ width: 80%}
 <!--  <button type="button" onclick="submitForm()" id="clk">Submit</button> -->
 </form>
 
-<hr>
-
-<p>
-
 <div id="map"></div>
 
-<hr>
-
-<p>Img files:
-<UL>
+<p class="card-header card-header-files">Img files:
+<UL class="card-body card-body-files">
 
 <?php
 
@@ -83,10 +73,8 @@ foreach ($shFiles as $file) {
 
 </UL>
 
-<hr>
-
-<p>Short instructions:
-<ul>
+<p class="card-header card-header-instructions">Short instructions:
+<ul class="card-body card-body-instructions">
 <li>Download and save a kml-file of the visited squadratinhos from <a href="https://squadrats.com/">Squadrats</a> (Map - Download KML)
 <li>Type the ID for your map (it can be your name or whatever)
 <li>Zoom and pan the map above to the area you want the squadratinhos (default values gives you a map with about 46000 squadratinhos)
@@ -114,16 +102,12 @@ foreach ($shFiles as $file) {
 <li>On the Garmin you'll see the unvisited squadratinhos surrounded with thicker dark red line
 </ul>
 
-<hr>
-
-<p>Some screen shots:<br>
+<p class="card-header card-standalone card-header-screenshots">Some screen shots:<br>
 <IMG src="screenshot-sample.png">
 <IMG src="screenshot-enable.png">
 
-<hr>
-
-<p>Tested devices:
-<ul>
+<p class="card-header card-header-devices">Tested devices:
+<ul class="card-body card-body-devices">
   <li>Garmin Edge 530
   <li>Garmin Edge 820
   <li>Garmin Edge 840
@@ -133,10 +117,8 @@ foreach ($shFiles as $file) {
   <li>Garmin eTrex 30
 </ul>
 
-<hr>
-
-<p>ToDo:
-<ul>
+<p class="card-header card-header-todo">ToDo:
+<ul class="card-body card-body-todo">
   <li>Add optional grid for whole map area
   <li>User configurable tile line color and width
   <li>Add an option to make a map of squadrats (zoom level 14)
@@ -170,9 +152,7 @@ foreach ($shFiles as $file) {
   </ul>
 </ul>
 
-<hr>
-
-<p>Developer: <A href="mailto:olli.ranta@gmail.com">Olli</A><br>
+<p class="footer">Developer: <A href="mailto:olli.ranta@gmail.com">Olli</A><br>
 Version: 20250124
 
 <script>
@@ -334,6 +314,8 @@ function lat2tile(lat,zoom) {
 }
 
 </script>
+
+<script src="aspect-ratio-chooser.js"></script>
 
 </body>
 </html>
