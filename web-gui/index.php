@@ -35,15 +35,15 @@
   <input type="text" id="SElon" name="SElon" value="26.2">
   SE lat
   <input type="text" id="SElat" name="SElat" value="59.8"><br>
-  Line color
-  <input type="color" id="lineColor" name="lineColor" value="#853A3A">
-  Line weight
-  <input type="number" id="lineWeight" name="lineWeight" min="1" max="10" value="5"><br>
   <label for="zoomLevel">Select a zoom level:</label>
   <select id="zoomLevel" name="zoomLevel">
     <option selected value="17">Squadratinhos</option>
     <option value="14">Squadrats</option>
   </select><br>
+  Line color
+  <input type="color" id="lineColor" name="lineColor" value="#853A3A">
+  Line weight
+  <input type="number" id="lineWeight" name="lineWeight" min="1" max="10" value="5"><br>
   <input type="submit" id="submitButton" value="Upload kml file" name="submit">
   <input type="checkbox" id="cookie" name="cookie" value="cookie">
   <label for="cookie"> Save map properties into a cookie</label><br>
@@ -80,8 +80,9 @@ foreach ($shFiles as $file) {
 
 <p class="card-header card-header-instructions">Short instructions:
 <ul class="card-body card-body-instructions">
-<li>Download and save a kml-file of the visited squadratinhos from <a href="https://squadrats.com/">Squadrats</a> (Map - Download KML)
+<li>Download and save a kml-file of the visited squadrats and squadratinhos from <a href="https://squadrats.com/">Squadrats</a> (Map - Download KML)
 <li>Type the ID for your map (it can be your name or whatever)
+<li>Select a zoom level, line color and weight and map aspect ratio
 <li>Zoom and pan the map above to the area you want the squadratinhos (default values gives you a map with about 46000 squadratinhos)
 <li>Maximum number of squadratinhos for the map layer is <span id="maxNumberOfSquadrats"></span>. If there are more on the map, zoom in (in that case the "Upload kml file" button is not active)
 <li>It's also possible to give the NW and SE corner coordinates manually
@@ -125,12 +126,25 @@ foreach ($shFiles as $file) {
 <p class="card-header card-header-todo">ToDo:
 <ul class="card-body card-body-todo">
   <li>Add optional grid for whole map area
-  <li>User configurable tile line color and width
-  <li>Add an option to make a map of squadrats (zoom level 14)
   <li>Fix the Img files list to be sorted by file date
-  <li>Get rid of messy lines near the edges
   <li>Add the kml-file as an overlay to the selection map
   <li>Make a browser extension
+  <li>User configurable map aspect ratio
+  <ul>
+    <li>20260510 Added user configurable map aspect ratio
+  </ul>
+  <li>User configurable tile line color and width
+  <ul>
+    <li>20260510 Added user configurable tile line color and width
+  </ul>
+  <li>Add an option to make a map of squadrats (zoom level 14)
+  <ul>
+    <li>20260510 Option for squadrats or squadratinhos
+  </ul>
+  <li>Get rid of messy lines near the edges
+  <ul>
+    <li>20260222 Only unvisited tiles on the map
+  </ul>
   <li>Complete re-write
   <ul>
     <li>20260222 Only unvisited tiles on the map
@@ -158,7 +172,7 @@ foreach ($shFiles as $file) {
 </ul>
 
 <p class="footer">Developer: <A href="mailto:olli.ranta@gmail.com">Olli</A><br>
-Version: 20250124
+Version: 20260510
 
 <script>
 
