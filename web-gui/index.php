@@ -53,31 +53,6 @@
 
 <div id="map"></div>
 
-<p class="card-header card-header-files">Img files:
-<UL class="card-body card-body-files">
-
-<?php
-
-# https://stackoverflow.com/questions/21416793/deleting-3-days-old-file-from-folder-in-php
-$imgFiles = glob("img/*");
-$shFiles = glob("../../jobs/missing_squadrats/*.kml");
-$threshold = strtotime('-1 day');
-foreach ($imgFiles as $file) {
-    if (is_file($file)) {
-        if ($threshold < filemtime($file)) {
-			echo "<LI><A href=\"https://oranta.kapsi.fi/missing_squadrats/" . $file . "\">" . str_replace("img/","",$file) . "</A><BR>\r\n";
-        }
-    }
-}
-foreach ($shFiles as $file) {
-    if (is_file($file)) {
-		echo "<LI>" . str_replace("../../jobs/missing_squadrats/","",$file) . "<BR>\r\n";
-	}
-}
-?>
-
-</UL>
-
 <p class="card-header card-header-instructions">Short instructions:
 <ul class="card-body card-body-instructions">
 <li>Download and save a kml-file of the visited squadrats and squadratinhos from <a href="https://squadrats.com/">Squadrats</a> (Map - Download KML)
