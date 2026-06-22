@@ -1,5 +1,3 @@
-<!DOCTYPE html>
-
 <?php
 
 function clean($string) {
@@ -36,7 +34,7 @@ function is_valid_squadrats_kml($file): bool {
   return FALSE;
 }
 
-$tmpName = $_FILES['fileToUpload']['tmp_name'];
+$tmpName = $_FILES['fileToUpload']['tmp_name'] ?? NULL;
 
 if (empty($tmpName) || !is_valid_squadrats_kml($tmpName)) {
   die("Invalid .kml file.");
@@ -47,11 +45,23 @@ $NWlon = (float) $_POST['NWlon'] ?? 0;
 $NWlat = (float) $_POST['NWlat'] ?? 0;
 $SElon = (float) $_POST['SElon'] ?? 0;
 $SElat = (float) $_POST['SElat'] ?? 0;
-$lineWeight = (int) $_POST['lineWeight'] ?? 0;
-$lineColor = str_replace("#", "", clean($_POST['lineColor']));
-$zoomLevel = (int) $_POST['zoomLevel'] ?? 0;
+$lineWeight = (int) $_POST['lineWeight'] ?? 5;
+$lineColor = str_replace("#", "", clean($_POST['lineColor'] ?? '5853A3A'));
+$zoomLevel = (int) $_POST['zoomLevel'] ?? 14;
 $target_dir = "../../jobs/missing_squadrats/";
 $fileName = date('Y-m-d') . '-' . $userName;
+
+if (!ctype_xdigit($lineColor)) {
+  die('Invalid lineColor');
+}
+
+if ($lineWeight < 1 || $lineWeight > 10) {
+  die('Invalid lineWeight. Must be 1-10');
+}
+
+if (!in_array($zoomLevel, [14, 17])) {
+  die('Invalid zoomLevel. Must be 14 or 17.');
+}
 
 if (!$NWlon || !$NWlat || !$SElon || !$SElat) {
   die('Invalid coordinates.');
@@ -86,7 +96,7 @@ if (!empty($_POST['cookie'])) {
 }
 
 ?>
-
+<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
