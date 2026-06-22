@@ -1,42 +1,8 @@
-<!DOCTYPE html>
-
 <?php
 
-function clean($string) {
-   $string = str_replace(' ', '_', $string); // Replaces all spaces with hyphens.
+require __DIR__ . '/functions.php';
 
-   return preg_replace('/[^A-Za-z0-9\-]/', '', $string); // Removes special chars.
-}
-
-function is_valid_squadrats_kml($file): bool {
-  libxml_use_internal_errors(true);
-
-  $dom = new \DOMDocument();
-  if (!$dom->load($file)) {
-    return FALSE;
-  }
-
-  // Search for Kml->Document->Placemark elements.
-  $placemarks = $dom->getElementsByTagName('kml')->item(0)
-    ?->getElementsByTagName('Document')->item(0)
-    ?->getElementsByTagName('Placemark');
-
-  if (!$placemarks->length > 0) {
-    return FALSE;
-  }
-
-  // Search for Placemark->name element with the value of "squadrats".
-  foreach ($placemarks as $placemark) {
-    $name = $placemark->getElementsByTagName('name')->item(0)?->textContent;
-
-    if ($name === 'squadrats') {
-      return TRUE;
-    }
-  }
-  return FALSE;
-}
-
-$tmpName = $_FILES['fileToUpload']['tmp_name'];
+$tmpName = $_FILES['fileToUpload']['tmp_name'] ?? NULL;
 
 if (empty($tmpName) || !is_valid_squadrats_kml($tmpName)) {
   die("Invalid .kml file.");
@@ -85,26 +51,8 @@ if (!empty($_POST['cookie'])) {
   setcookie("MissingSquadrats", json_encode($cookieValues), time() + (86400 * 30)); // 86400 = 1 day
 }
 
-?>
-
-<html>
-<head>
-  <meta charset="utf-8">
-</head>
-<body>
-
-<h1>Upload a kml file</h1>
-
-<p>Everything ok. Please go back to the main page</p><br>
-
-<?php
-
-#echo "OSM file name: " . $target_file . "<BR>\r\n";
-if (move_uploaded_file($tmpName, $target_dir . $fileName . '.kml')) {
-	echo "The file ". $fileName . " has been uploaded.<BR>\r\n";
-} else {
-		echo "Sorry, there was an error uploading your file.<BR>\r\n";
-    exit;
+if (!move_uploaded_file($tmpName, $target_dir . $fileName . '.kml')) {
+  die("Sorry, there was an error uploading your file.");
 }
 
 $job = implode(',', [
@@ -118,8 +66,10 @@ $job = implode(',', [
   'lineColor' => $lineColor,
   'zoomLevel' => $zoomLevel,
 ]);
-file_put_contents($target_dir . $fileName . '.csv', $job);
-?>
 
-</body>
-</html>
+if (!file_put_contents($target_dir . $fileName . '.csv', $job)) {
+  die("Sorry, there was an error uploading your file.");
+}
+
+header('Location: file.php?file=' . $fileName);
+exit;
