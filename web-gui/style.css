@@ -270,7 +270,7 @@ label[for="cookie"] {
 
 .card-body-files {
 	list-style: none;
-	display: flex;
+/*	display: flex; */
 	flex-wrap: wrap;
 	gap: .45rem;
 }
@@ -280,11 +280,11 @@ label[for="cookie"] {
 	align-items: center;
 	gap: .3rem;
 	padding: .3rem .9rem;
-	background: var(--clr-bg);
+/*	background: var(--clr-bg);
 	border: 1.5px solid var(--clr-border);
 	border-radius: 999px;
 	font-size: .78rem;
-	font-weight: 500;
+	font-weight: 500; */
 	color: var(--clr-primary);
 	text-decoration: none;
 	transition: all var(--transition);
