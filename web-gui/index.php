@@ -15,6 +15,9 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-ajax/2.1.0/leaflet.ajax.min.js"></script>
 
+<!-- Omnivore dependencies -->
+<script src="https://unpkg.com/leaflet-omnivore/leaflet-omnivore.min.js"></script>
+
 <link rel="stylesheet" href="style.css">
 
 </head>
@@ -120,9 +123,9 @@ foreach ($shFiles as $file) {
   <li>Garmin Edge 1030
   <li>Garmin Edge 1040
   <li>Garmin Edge 1050
+  <li>Garmin Edge Explorer 2
   <li>Garmin eTrex 30
 </ul>
-
 <p class="card-header card-header-todo">ToDo:
 <ul class="card-body card-body-todo">
   <li>Add optional grid for whole map area
@@ -279,6 +282,63 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 }).addTo(map);
 
+let placemarkLayers = {};
+let currentDisplay = null;
+
+const selector = document.getElementById('zoomLevel');
+
+const layerSets = {
+    14: [
+        "squadrats",
+        "ubersquadrat"
+    ],
+    17: [
+        "squadratinhos",
+        "ubersquadratinho"
+    ]
+};
+
+document.getElementById('fileToUpload').addEventListener('change', e => {
+
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = evt => {
+
+      const blob = new Blob(
+        [evt.target.result],
+          { type: 'application/vnd.google-earth.kml+xml' }
+        );
+
+      const url = URL.createObjectURL(blob);
+
+      const kmlLayer = omnivore.kml(url);
+
+      kmlLayer.on("ready", () => {
+
+        placemarkLayers = {};
+
+        kmlLayer.eachLayer(layer => {
+
+          const name = layer.feature?.properties?.name;
+
+          if (!name) return;
+
+          if (!placemarkLayers[name]) {
+            placemarkLayers[name] = L.featureGroup();
+          }
+
+          placemarkLayers[name].addLayer(layer);
+        });
+
+      // Show initial selection
+      updateDisplay();
+      });
+    };
+    reader.readAsText(file);
+});
+
 var tiles = countTiles();
 updateForm();
 document.getElementById("tilesNumber").innerHTML = tiles;
@@ -310,14 +370,43 @@ select.addEventListener('input', function (event) {
     squadratinhosLineWeight = document.getElementById("lineWeight").value
     document.getElementById("lineColor").value = squadratsColor;
     document.getElementById("lineWeight").value = squadratsLineWeight;
+    zoomLevelName = 'squadrats';
   } else if (zoomLevel == 17) {
     squadratsColor = document.getElementById("lineColor").value
     squadratsLineWeight = document.getElementById("lineWeight").value
     document.getElementById("lineColor").value = squadratinhosColor;
     document.getElementById("lineWeight").value = squadratinhosLineWeight;
+    zoomLevelName = 'squadratinhos';
   }
   countTiles();
+
 });
+
+function updateDisplay() {
+
+    if (currentDisplay) {
+        map.removeLayer(currentDisplay);
+    }
+
+    currentDisplay = L.featureGroup();
+
+    const selectedLayers =
+        layerSets[selector.value] || [];
+
+    selectedLayers.forEach(name => {
+
+        if (placemarkLayers[name]) {
+            currentDisplay.addLayer(
+                placemarkLayers[name]
+            );
+        }
+    });
+
+    currentDisplay.addTo(map);
+
+}
+
+selector.addEventListener("change", updateDisplay);
 
 function updateForm() {
   var bounds = map.getBounds();
