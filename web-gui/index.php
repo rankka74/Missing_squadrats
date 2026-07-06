@@ -68,7 +68,8 @@ $threshold = strtotime('-1 day');
 foreach ($imgFiles as $file) {
     if (is_file($file)) {
         if ($threshold < filemtime($file)) {
-			echo "<LI><A href=\"https://oranta.kapsi.fi/missing_squadrats/" . $file . "\">" . str_replace("img/","",$file) . "</A><BR>\r\n";
+			$href = file_exists('/.dockerenv') ? $file : "https://oranta.kapsi.fi/missing_squadrats/" . $file;
+			echo "<LI><A href=\"" . $href . "\">" . str_replace("img/","",$file) . "</A><BR>\r\n";
         }
     }
 }

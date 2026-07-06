@@ -2,15 +2,50 @@
 Create a Garmin compatible map image from the [Squadrats.com](http://www.squadrats.com/) kml file.
 
 # Getting Started
-## Prerequisites
-You need a working python installation to run the script.
 
-## Installation
+## Docker
+
+The easiest way to run the project is with Docker.
+
+### Prerequisites
+- [Docker](https://docs.docker.com/get-docker/) with the Compose plugin
+
+### Run
+```
+git clone https://github.com/rankka74/Missing_squadrats.git
+cd Missing_squadrats
+docker compose up --build
+```
+
+Open http://localhost:8000 in your browser.
+
+### How it works inside Docker
+- **Web GUI** is served by the PHP built-in server on port 8000.
+- Submitting the form uploads the KML file and runs `missing_squadrats.py` synchronously — the page shows "Done!" when the `.img` file is ready.
+- Generated `.img` files, the job queue, and the log are stored in named Docker volumes so they survive container restarts.
+
+### Volumes
+| Volume | Contents |
+|---|---|
+| `img-files` | Generated Garmin `.img` files |
+| `job-queue` | Pending and in-progress jobs |
+| `oranta-data` | Log file and map-number counter |
+
+To reset everything: `docker compose down -v`
+
+---
+
+## Manual installation
+
+### Prerequisites
+You need a working Python installation to run the script.
+
+### Installation
 1. Clone the repo
 ```
 git clone https://github.com/rankka74/Missing_squadrats.git
 ```
-2. Install necessary python libraries eiter system wise or as a virtual environment
+2. Install necessary python libraries either system wide or as a virtual environment
 ```
 sys
 os

@@ -1,0 +1,20 @@
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      # Bind-mount source files so changes are live without rebuilding
+      - ./web-gui:/srv/www/missing_squadrats
+      - ./missing_squadrats.py:/srv/src/missing_squadrats/missing_squadrats.py
+      - ./testMissingSquadrats.py:/srv/src/missing_squadrats/testMissingSquadrats.py
+      - ./mkgmap-config/config.txt:/srv/src/missing_squadrats/config.txt
+      # Named volumes for generated output and state (persist across restarts)
+      - img-files:/srv/www/missing_squadrats/img
+      - job-queue:/srv/jobs/missing_squadrats
+      - oranta-data:/home/users/oranta
+
+volumes:
+  img-files:
+  job-queue:
+  oranta-data:

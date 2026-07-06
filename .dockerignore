@@ -1,0 +1,6 @@
+.git
+jobs/
+www/
+*.img
+*.osm
+__pycache__/

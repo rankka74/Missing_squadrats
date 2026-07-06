@@ -129,6 +129,44 @@ $job = implode(',', [
   'zoomLevel' => $zoomLevel,
 ]);
 file_put_contents($target_dir . $fileName . '.csv', $job);
+
+// In Docker: spawn Python directly so cron is not needed for local development.
+if (file_exists('/.dockerenv')) {
+  echo "Processing map, please wait...<BR>\r\n";
+  flush();
+
+  set_time_limit(0);
+
+  $args = [
+    '/usr/bin/python3',
+    '/srv/src/missing_squadrats/missing_squadrats.py',
+    $fileName . '.kml',
+    $userName,
+    (string) $NWlon,
+    (string) $NWlat,
+    (string) $SElon,
+    (string) $SElat,
+    (string) $squadratinhosLineWeight,
+    $squadratinhosColor,
+  ];
+  $descriptors = [
+    0 => ['pipe', 'r'],
+    1 => ['file', '/home/users/oranta/missingSquadrats.log', 'a'],
+    2 => ['file', '/home/users/oranta/missingSquadrats.log', 'a'],
+  ];
+  $proc = proc_open($args, $descriptors, $pipes, '/srv/src/missing_squadrats');
+  if (is_resource($proc)) {
+    fclose($pipes[0]);
+    $exitCode = proc_close($proc);
+    if ($exitCode === 0) {
+      echo "Done! <a href=\"index.php\">Go back</a> to download your map.<br>\r\n";
+    } else {
+      echo "Processing failed (exit code $exitCode). Check the log for details.<br>\r\n";
+    }
+  } else {
+    echo "Failed to start processing.<br>\r\n";
+  }
+}
 ?>
 
 </body>
